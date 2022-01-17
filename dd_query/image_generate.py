@@ -128,8 +128,9 @@ class DDImageGenerate(GetUserFollowingVTB):
         p_x = 0
         p_y = 0
         count = 0
+        t_follow = len(self.follow_list)
         for v in self.follow_list:
-            print(count)
+            print(f"获取数据: {count + 1}/{t_follow}")
             im = self.single_card(v)
             self.paste_image(pt, im, 31 + 595 * p_x, 371 + 198 * p_y, 542, 151)
 
@@ -147,8 +148,7 @@ class DDImageGenerate(GetUserFollowingVTB):
                   fill=(0, 0, 0), font=font)
 
         pt = pt.convert("RGB")
-        save_name = f"{spath}/temp/{random.randint(10000, 99999)}.jpg"
+        save_name = f"{spath}/temp/{self.username}.jpg"
 
         pt.save(save_name, quality=95)
-
         return save_name, count, self.total_following  # 文件名, 关注vtb数, 总关注数
