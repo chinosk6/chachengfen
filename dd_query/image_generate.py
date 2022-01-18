@@ -9,8 +9,8 @@ import os
 spath = os.path.split(__file__)[0]
 
 class DDImageGenerate(GetUserFollowingVTB):
-    def __init__(self, username):
-        super().__init__(username)
+    def __init__(self, username, max_follow_list=2000):
+        super().__init__(username, max_follow_list=max_follow_list)
 
     @staticmethod
     def timestamp_to_text(timestamp: int, _format="%Y-%m-%d %H:%M:%S"):
@@ -75,6 +75,8 @@ class DDImageGenerate(GetUserFollowingVTB):
                   fill=(0, 0, 0), font=font)  # 粉丝数, 大航海数
 
         f_day = int((time.time() - vdata.mtime) / 86400)
+        if f_day == 0:
+            f_day = "未知"
         p_text = f"关注天数： {f_day}"
 
         font = ImageFont.truetype(f"{spath}/src/font/msyh.ttc", size=15)
@@ -123,7 +125,7 @@ class DDImageGenerate(GetUserFollowingVTB):
         im = Image.open(f"{spath}/src/bf.png")
         self.paste_image(pt, im, 31, 277, 12, 56)
         font = ImageFont.truetype(f"{spath}/src/font/msyh.ttc", size=53)
-        draw.text(xy=(58, 266), text=f"关注列表 ({len(self.follow_list)})", fill=(0, 0, 0), font=font)  # 关注列表
+        draw.text(xy=(58, 266), text=f"关注列表 ({self.total_following_vtb})", fill=(0, 0, 0), font=font)  # 关注列表
 
         p_x = 0
         p_y = 0
@@ -151,4 +153,4 @@ class DDImageGenerate(GetUserFollowingVTB):
         save_name = f"{spath}/temp/{self.username}.jpg"
 
         pt.save(save_name, quality=95)
-        return save_name, count, self.total_following  # 文件名, 关注vtb数, 总关注数
+        return save_name, self.total_following_vtb, self.total_following  # 文件名, 关注vtb数, 总关注数
