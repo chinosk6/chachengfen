@@ -75,7 +75,7 @@ class DDImageGenerate(GetUserFollowingVTB):
                   fill=(0, 0, 0), font=font)  # 粉丝数, 大航海数
 
         f_day = int((time.time() - vdata.mtime) / 86400)
-        if f_day == 0:
+        if not self.is_limit:
             f_day = "未知"
         p_text = f"关注天数： {f_day}"
 
