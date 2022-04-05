@@ -68,6 +68,8 @@ class GetUserFollowingVTB:
             data = json.loads(api.get_user_following_list(self.userid, ps=50, pn=i + 1))
             if int(data["code"]) == 22007:  # 5页限制
                 break
+            elif int(data["code"]) == 22115:
+                raise errors.UserBan(data["message"])
             elif int(data["code"]) != 0:
                 raise errors.APIError(data["message"])
 
@@ -95,6 +97,9 @@ class GetUserFollowingVTB:
                 print("获取共同关注失败, 改为获取普通列表", e)
                 self.is_limit = True
                 return self.get_user_following()
+            except errors.UserBan as e:
+                print("用户已设置隐私，结束查找")
+                return [], 0, 0
 
         data = json.loads(api.get_user_following_list(self.userid))
         total_following = data["data"]["total"]
@@ -116,7 +121,10 @@ class GetUserFollowingVTB:
         total_following_vtb = 0
         for i in range(40):
             data = json.loads(api.get_same_following(self.userid, dd.sessdata, ps=50, pn=i + 1))
-            if int(data["code"]) != 0:
+            if int(data["code"]) == 22115:
+                 print("用户已设置隐私，无法查看")
+                 raise errors.UserBan(data["message"])
+            elif int(data["code"]) != 0:
                 raise errors.APIError(data["message"])
             get_list = data["data"]["list"]
             total_following_vtb = data["data"]["total"]
