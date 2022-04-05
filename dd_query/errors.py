@@ -3,3 +3,6 @@ class UserNotFound(Exception):
 
 class APIError(Exception):
     pass
+
+class UserBan(Exception):
+    pass
