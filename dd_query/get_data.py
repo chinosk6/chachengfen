@@ -94,7 +94,7 @@ class GetUserFollowingVTB:
                     following += f_list
                 total_following_vtb += f_count
             except errors.APIError as e:
-                print("获取共同关注失败, 改为获取普通列表")
+                print("获取共同关注失败, 改为获取普通列表", e)
                 self.is_limit = True
                 return self.get_user_following()
             except errors.UserBan as e:
