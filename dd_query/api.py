@@ -85,14 +85,14 @@ def relation_modify(uid, mtype: int, csrf, sessdata):
     response = requests.request("POST", url, headers=headers, data=payload)
     return response.text
 
-def get_all_vtb_info():
+def get_all_vtb_info_jsonstr():
     if not os.path.isdir(f"{spath}/cache"):
         os.mkdir(f"{spath}/cache")
 
     config = DObj(f"{spath}/cache/cache.ini")
     last_time = int(config.readobj("cache", "last_update_time", "0"))
     time_now = int(time.time())
-    if time_now - last_time > 600:
+    if time_now - last_time > 21600:
         url = "https://api.vtbs.moe/v1/info"
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'
@@ -122,3 +122,15 @@ def get_all_vtb_info():
         print("检测到有效缓存")
         with open(f"{spath}/cache/vtb_data_simple.json", "r", encoding="utf8") as f:
             return f.read()
+
+def get_all_vtb_info():
+    jsonstr = get_all_vtb_info_jsonstr()
+    ret = []
+    data = json.loads(jsonstr)
+    for v in data:
+        if "mid" not in v:
+            continue
+
+        ret.append(v)
+    return json.dumps(ret, ensure_ascii=False)
+
