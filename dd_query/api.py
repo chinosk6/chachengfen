@@ -98,8 +98,8 @@ def get_all_vtb_info_jsonstr():
             'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'
         }
         proxies = {
-            'HTTP': f'192.168.123.147:7890',
-            'HTTPS': f'192.168.123.147:7890'
+            'HTTP': f'在这填入代理地址',
+            'HTTPS': f'在这填入代理地址'
         }
         '''
         proxies = {
