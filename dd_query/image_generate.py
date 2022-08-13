@@ -125,12 +125,13 @@ class DDImageGenerate(GetUserFollowingVTB):
         im = Image.open(f"{spath}/src/bf.png")
         self.paste_image(pt, im, 31, 277, 12, 56)
         font = ImageFont.truetype(f"{spath}/src/font/msyh.ttc", size=53)
+        t_follow = len(self.follow_list)
+        self.total_following_vtb = t_follow
         draw.text(xy=(58, 266), text=f"关注列表 ({self.total_following_vtb})", fill=(0, 0, 0), font=font)  # 关注列表
 
         p_x = 0
         p_y = 0
         count = 0
-        t_follow = len(self.follow_list)
         for v in self.follow_list:
             print(f"获取数据: {count + 1}/{t_follow}")
             im = self.single_card(v)

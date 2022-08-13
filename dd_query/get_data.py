@@ -23,6 +23,7 @@ class DDAccount:
 
 class GetUserFollowingVTB:
     def __init__(self, username: str, max_follow_list=2000):
+        self.vtb_list = None
         self.username = username
         self.max_follow_list = max_follow_list
         self.userdata = self.get_userinfo()
@@ -68,8 +69,6 @@ class GetUserFollowingVTB:
             data = json.loads(api.get_user_following_list(self.userid, ps=50, pn=i + 1))
             if int(data["code"]) == 22007:  # 5页限制
                 break
-            elif int(data["code"]) == 22115:
-                raise errors.UserBan(data["message"])
             elif int(data["code"]) != 0:
                 raise errors.APIError(data["message"])
 
@@ -97,9 +96,6 @@ class GetUserFollowingVTB:
                 print("获取共同关注失败, 改为获取普通列表", e)
                 self.is_limit = True
                 return self.get_user_following()
-            except errors.UserBan as e:
-                print("用户已设置隐私，结束查找")
-                return [], 0, 0
 
         data = json.loads(api.get_user_following_list(self.userid))
         total_following = data["data"]["total"]
@@ -110,7 +106,7 @@ class GetUserFollowingVTB:
                 continue
             _fid.append(_f.mid)
             _fis.append(_f)
-        following = sorted(_fis, key=lambda x: x.mtime, reverse=True)
+        # following = sorted(_fis, key=lambda x: x.mtime, reverse=True)
         return following[:self.max_follow_list], total_following, total_following_vtb
 
     def get_same_following(self, dd: DDAccount) -> models.t.Tuple[models.t.List[models.FollowingUserInfo], int]:
@@ -141,18 +137,25 @@ class GetUserFollowingVTB:
         return following, total_following_vtb
 
     def check_vtb_list(self) -> models.t.Tuple[models.t.List[models.VTBInfo], int]:
-        vtb_list = []
-        vtb_data = json.loads(api.get_all_vtb_info())
+        vtb_list = []  # mid列表
+        vtb_data = json.loads(api.get_all_vtb_info())  # json列表
+        vtb_data_new = []
         for v in vtb_data:
-            if v["mid"] == 401742377:
+            if v["mid"] in [401742377, 161775300]:
                 continue
-            vtb_list.append(v["mid"])
+            if v["mid"] not in vtb_list:
+                vtb_list.append(v["mid"])
+                vtb_data_new.append(v)
+        vtb_data = vtb_data_new
         vtb_total_count = len(vtb_list)
         vtb_following = []
+        follow_ids = []  # 去重
         for u in self.follow_list:
-            if u.mid in vtb_list:
+            if u.mid in vtb_list and u.mid not in follow_ids:
                 vdata = vtb_data[vtb_list.index(u.mid)]
                 vtb_following.append(models.VTBInfo(u.mtime, **vdata))
+                follow_ids.append(u.mid)
+        self.vtb_list = vtb_list
         return vtb_following, vtb_total_count
 
     @staticmethod
