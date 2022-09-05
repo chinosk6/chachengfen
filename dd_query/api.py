@@ -1,3 +1,5 @@
+import random
+
 import requests
 import os
 from configobj import ConfigObj
@@ -29,7 +31,8 @@ class DObj:
 def user_search(username):
     url = f"https://api.bilibili.com/x/web-interface/search/type?search_type=bili_user&keyword={username}"
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'
+        'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6',
+        "Cookie": f"buvid3={random.randint(0, 9999999)};"
     }
     response = requests.request("GET", url, headers=headers)
     return response.text
